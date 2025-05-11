@@ -65,13 +65,14 @@ int mergesort(int v[], int l, int r)
     return 0;               // retorna 0 para indicar que a função foi executada com sucesso
 }
 
-void mergePassos(const char *comp1, const char *comp2, const char *ext){
+void mergePassos(const char *comp1, const char *comp2, const char *ext)
+{
 
     FILE *op1 = fopen(comp1, "r"); // Abertura do arquivo em modo leitura
     FILE *op2 = fopen(comp2, "r"); // Abertura do arquivo em modo leitura
-    FILE *out = fopen(ext, "w+"); // Abertura do arquivo em modo leitura e escrita
+    FILE *out = fopen(ext, "w+");  // Abertura do arquivo em modo leitura e escrita
 
-    if (!op1 || !op2 || !out)// vericação se os arquivos foram abertos corretamente
+    if (!op1 || !op2 || !out) // vericação se os arquivos foram abertos corretamente
     {
         printf("Erro ao abrir os arquivos.\n"); // caso não tenha sido, retorna erro e encerra o programa
         exit(1);
@@ -80,72 +81,70 @@ void mergePassos(const char *comp1, const char *comp2, const char *ext){
     int a, b;
     int aV = fscanf(op1, "%d", &a); // leitura do primeiro arquivo
     int bV = fscanf(op2, "%d", &b); // leitura do segundo arquivo
-    while (aV == 1 && bV == 1)// enquanto os dois arquivos tiverem números
+    while (aV == 1 && bV == 1)      // enquanto os dois arquivos tiverem números
     {
         if (a < b)
         {
-            fprintf(out, "%d ", a); // se o número do primeiro arquivo for menor, escreve no arquivo de saída
+            fprintf(out, "%d ", a);     // se o número do primeiro arquivo for menor, escreve no arquivo de saída
             aV = fscanf(op1, "%d", &a); // lê o próximo número do primeiro arquivo
         }
         else
         {
-            fprintf(out, "%d ", b); // se o número do segundo arquivo for menor, escreve no arquivo de saída
+            fprintf(out, "%d ", b);     // se o número do segundo arquivo for menor, escreve no arquivo de saída
             bV = fscanf(op2, "%d", &b); // lê o próximo número do segundo arquivo
         }
-        
     }
-    while(aV == 1)//enquanto o primeiro arquivo tiver numeros
+    while (aV == 1) // enquanto o primeiro arquivo tiver numeros
     {
-        fprintf(out, "%d ", a);// escreve o número no arquivo de saída
+        fprintf(out, "%d ", a);     // escreve o número no arquivo de saída
         aV = fscanf(op1, "%d", &a); // lê o próximo número do primeiro arquivo
     }
-    while(bV == 1)//enquanto o segundo arquivo tiver numeros
+    while (bV == 1) // enquanto o segundo arquivo tiver numeros
     {
-        fprintf(out, "%d ", b); // escreve o número no arquivo de saída
+        fprintf(out, "%d ", b);     // escreve o número no arquivo de saída
         bV = fscanf(op2, "%d", &b); // lê o próximo número do segundo arquivo
     }
-    fclose(op1); // fechamento do arquivo após a leitura
-    fclose(op2); // fechamento do arquivo após a leitura
-    fclose(out); // fechamento do arquivo após a leitura
+    fclose(op1);                                 // fechamento do arquivo após a leitura
+    fclose(op2);                                 // fechamento do arquivo após a leitura
+    fclose(out);                                 // fechamento do arquivo após a leitura
     printf("Arquivos mesclados com sucesso.\n"); // caso tenha sido, imprime mensagem de sucesso
-    printf("Arquivo de saída: out.txt"); // imprime o nome do arquivo de saída
-    
+    printf("Arquivo de saída: out.txt");         // imprime o nome do arquivo de saída
 }
 
-void mergeAll(int ttPassos){   // função para mesclar todos os arquivos
-     int t = 0;// inicialização do número de arquivos a serem mesclados
-     int qtd = ttPassos;// quantidade de arquivos a serem mesclados
-     char comp1[100], comp2[100], ext[100];// vetores de caracteres para os nomes dos arquivos
+void mergeAll(int ttPassos)
+{                                          // função para mesclar todos os arquivos
+    int t = 0;                             // inicialização do número de arquivos a serem mesclados
+    int qtd = ttPassos;                    // quantidade de arquivos a serem mesclados
+    char comp1[100], comp2[100], ext[100]; // vetores de caracteres para os nomes dos arquivos
 
-     while (qtd > 1)
-     {
-        int nw = 0; // inicialização do número de arquivos a serem mesclados
-        for (int i = 0; i < qtd; i += 2)//loop para mesclar os arquivos
+    while (qtd > 1)
+    {
+        int nw = 0;                                       // inicialização do número de arquivos a serem mesclados
+        char const *prefx = (t == 0) ? "passo" : "Merge"; // criação do prefixo do nome do arquivo a ser aberto, de acordo com o número do passo
+        for (int i = 0; i < qtd; i += 2)                  // loop para mesclar os arquivos
         {
-            sprintf(comp1, "/home/fels/Documentos/POD/Trabalho1/passo%d.txt", t == 0 ? "passo" : "merge", i);// criação do nome do arquivo a ser aberto, de acordo com o número do passo
-            sprintf(comp2, "/home/fels/Documentos/POD/Trabalho1/passo%d.txt", t == 0 ? "passo" : "merge", i + 1);// criação do nome do arquivo a ser aberto, de acordo com o número do passo
+            sprintf(comp1, "/home/fels/Documentos/POD/Trabalho1/%s%d.txt", prefx, i);     // criação do nome do arquivo a ser aberto, de acordo com o número do passo
+            sprintf(comp2, "/home/fels/Documentos/POD/Trabalho1/%s%d.txt", prefx, i + 1); // criação do nome do arquivo a ser aberto, de acordo com o número do passo
+            sprintf(ext, "/home/fels/Documentos/POD/Trabalho1/Merge%d.txt", nw);          // criação do nome do arquivo a ser aberto, de acordo com o número do passo
 
-            FILE *tst = fopen(comp2, "r"); // Abertura do arquivo em modo leitura
-            if (!tst)// verificação se o arquivo foi aberto de maneira correta
+            FILE *fp2 = fopen(comp2, "r"); // Abertura do arquivo em modo leitura
+            if (!fp2)
             {
-              fclose(fopen(comp1, "r"));// fechamento do arquivo
-              sprintf(ext, "/home/fels/Documentos/POD/Trabalho1/Merge%d.txt", nw);// criação do nome do arquivo a ser aberto, de acordo com o número do passo
-              rename(comp1, ext);// renomeia o arquivo
-              continue;// continua o loop
+                rename(comp1, ext); // renomeia o arquivo se o segundo não existir
+                nw++;              // incremento do número de arquivos a serem mesclados
+                continue;           // pula para o próximo arquivo
             }
-            fclose(tst);// fechamento do arquivo
-            sprintf(ext, "/home/fels/Documentos/POD/Trabalho1/Merge%d.txt", nw++);// criação do nome do arquivo a ser aberto, de acordo com o número do passo
-            mergePassos(comp1, comp2, ext);// chamada da função mergePassos para mesclar os arquivos
+            fclose(fp2);                    // fechamento do arquivo após a leitura
+            mergePassos(comp1, comp2, ext); // chamada da função mergePassos para mesclar os arquivos
+            nw++;                           // incremento do número de arquivos a serem mesclados
         }
+
         qtd = (qtd + 1) / 2; // atualização da quantidade de arquivos a serem mesclados
-        t++;// incremento do número de arquivos a serem mesclados
-
-     }
-
-     rename("/home/fels/Documentos/POD/Trabalho1/Merge0.txt", "home/fels/Documentos/POD/Trabalho1/out.txt");// renomeia o arquivo final
-     printf("Arquivo final: out.txt\n"); // imprime o nome do arquivo final
-     printf("Mesclagem concluída com sucesso.\n"); // imprime mensagem de sucesso
-     
+        t++;                 // incremento do número de arquivos a serem mesclados
+    }
+    rename("/home/fels/Documentos/POD/Trabalho1/Merge0.txt", "/home/fels/Documentos/POD/Trabalho1/out.txt");
+    printf("Mesclagem concluída com sucesso.\n"); // caso tenha sido, imprime mensagem de sucesso
+    printf("Arquivo de saída: out.txt\n");        // imprime o nome do arquivo de saída
 }
 
 // inicialização da função main
@@ -212,9 +211,10 @@ int main()
         {
             fprintf(nw, "%d ", v[j]); // impressão do vetor ordenado
         }
+        fclose(nw); // fechamento do arquivo após a leitura
     }
 
-    fclose(fp); // fechamento do arquivo após a leitura
+    fclose(fp);       // fechamento do arquivo após a leitura
     mergeAll(numTxt); // chamada da função mergeAll para mesclar os arquivos
-    return 0;   // retorno da função main
+    return 0;         // retorno da função main
 }
