@@ -111,42 +111,59 @@ void mergePassos(const char *comp1, const char *comp2, const char *ext)
     printf("Arquivo de saída: out.txt");         // imprime o nome do arquivo de saída
 }
 
-void mergeAll(int ttPassos)
-{                                          // função para mesclar todos os arquivos
-    int t = 0;                             // inicialização do número de arquivos a serem mesclados
+void mergeAll(int ttPassos) {
+    int t = 0;                             // contador de etapas de merge
     int qtd = ttPassos;                    // quantidade de arquivos a serem mesclados
-    char comp1[100], comp2[100], ext[100]; // vetores de caracteres para os nomes dos arquivos
+    char comp1[100], comp2[100], ext[100]; // nomes dos arquivos
 
-    while (qtd > 1)
-    {
-        int nw = 0;                                       // inicialização do número de arquivos a serem mesclados
-        char const *prefx = (t == 0) ? "passo" : "Merge"; // criação do prefixo do nome do arquivo a ser aberto, de acordo com o número do passo
-        for (int i = 0; i < qtd; i += 2)                  // loop para mesclar os arquivos
-        {
-            sprintf(comp1, "/home/fels/Documentos/POD/Trabalho1/%s%d.txt", prefx, i);     // criação do nome do arquivo a ser aberto, de acordo com o número do passo
-            sprintf(comp2, "/home/fels/Documentos/POD/Trabalho1/%s%d.txt", prefx, i + 1); // criação do nome do arquivo a ser aberto, de acordo com o número do passo
-            sprintf(ext, "/home/fels/Documentos/POD/Trabalho1/Merge%d.txt", nw);          // criação do nome do arquivo a ser aberto, de acordo com o número do passo
-
-            FILE *fp2 = fopen(comp2, "r"); // Abertura do arquivo em modo leitura
-            if (!fp2)
-            {
-                rename(comp1, ext); // renomeia o arquivo se o segundo não existir
-                nw++;              // incremento do número de arquivos a serem mesclados
-                continue;           // pula para o próximo arquivo
+    while (qtd > 1) {
+        int nw = 0;                                       // contador de novos arquivos gerados nesta etapa
+        for (int i = 0; i < qtd; i += 2) {
+            // Gera os nomes dos arquivos de entrada
+            if (t == 0) {
+                sprintf(comp1, "/home/fels/Documentos/POD/Trabalho1/passo%d.txt", i);
+                sprintf(comp2, "/home/fels/Documentos/POD/Trabalho1/passo%d.txt", i + 1);
+            } else {
+                sprintf(comp1, "/home/fels/Documentos/POD/Trabalho1/Merge%d_%d.txt", t - 1, i);
+                sprintf(comp2, "/home/fels/Documentos/POD/Trabalho1/Merge%d_%d.txt", t - 1, i + 1);
             }
-            fclose(fp2);                    // fechamento do arquivo após a leitura
-            mergePassos(comp1, comp2, ext); // chamada da função mergePassos para mesclar os arquivos
-            nw++;                           // incremento do número de arquivos a serem mesclados
+            
+            // Gera o nome do arquivo de saída
+            sprintf(ext, "/home/fels/Documentos/POD/Trabalho1/Merge%d_%d.txt", t, nw);
+
+            // Verifica se o segundo arquivo existe
+            FILE *fp2 = fopen(comp2, "r");
+            if (!fp2) {
+                // Se não existir, apenas renomeia o primeiro arquivo
+                rename(comp1, ext);
+                nw++;
+                continue;
+            }
+            fclose(fp2);
+
+            // Se ambos existirem, faz o merge
+            mergePassos(comp1, comp2, ext);
+            nw++;
         }
-
-        qtd = (qtd + 1) / 2; // atualização da quantidade de arquivos a serem mesclados
-        t++;                 // incremento do número de arquivos a serem mesclados
+        
+        // Atualiza a quantidade de arquivos para a próxima etapa
+        qtd = nw;
+        t++;
     }
-    rename("/home/fels/Documentos/POD/Trabalho1/Merge0.txt", "/home/fels/Documentos/POD/Trabalho1/out.txt");
-    printf("Mesclagem concluída com sucesso.\n"); // caso tenha sido, imprime mensagem de sucesso
-    printf("Arquivo de saída: out.txt\n");        // imprime o nome do arquivo de saída
-}
 
+    // Renomeia o arquivo final para out.txt
+    if (t > 0) {
+        char finalName[100];
+        sprintf(finalName, "/home/fels/Documentos/POD/Trabalho1/Merge%d_0.txt", t - 1);
+        rename(finalName, "/home/fels/Documentos/POD/Trabalho1/out.txt");
+    } else {
+        // Caso especial quando há apenas um arquivo
+        rename("/home/fels/Documentos/POD/Trabalho1/passo0.txt", "/home/fels/Documentos/POD/Trabalho1/out.txt");
+    }
+
+    printf("Mesclagem concluída com sucesso.\n");
+    printf("Arquivo de saída: out.txt\n");
+}
 // inicialização da função main
 int main()
 {
